@@ -24,7 +24,7 @@ UPLOADED=0;
 help() {
 	if [ "${ARGS[0]}" = "?" ]; then
 			echo -e "
-CSS Sprite v0.1
+CSS Sprite v0.1 (last change Fri Jul 27 16:44:02 BRT 2012)
 
 ${B1}AUTHOR${B2}
   Marcelo Miranda Carneiro - mcarneiro@gmail.com
@@ -73,11 +73,6 @@ ${B1}USAGE${B2}
      file-name3=a:hover
      file-name2=.second-test
      file-name=.test
-
-  Roadmap:
-  1. Improve the CSS output;
-  1. Optimize the output png;
-  2. Create a grunt.js plugin;
 
 ${B1}EXAMPLES${B2}
   css-sprite ~/sprites/structure
@@ -300,13 +295,13 @@ upload() {
 		log "Uploading image $1";
 		local FILENAME=""; # commenting to make it work on git-bash "`file $1 | awk -F ':' '{print$1}' | awk -F '/' '{print$(NF)}'`";
 		local RETURN_MSG="`curl -s -F img=@$1 -F Filename=$FILENAME $UPLOAD_URL -b PHPSESSID=$SESSION_ID`";
+		echo "$1 : $RETURN_MSG" >> css-sprite.log;
 		if [ -z "`echo $RETURN_MSG | grep 'Uploaded successfully'`" ]; then
-			warn "failed to upload $FILENAME. Details below:";
+			warn "failed to upload $FILENAME. Log file generated at ./css-sprite.log:";
 			warn "  $RETURN_MSG";
 			exit 2;
 		else
 			echo '. ' >> css-sprite.temp;
-			echo "$1 : $RETURN_MSG" > css-sprite.log;
 		fi
 	fi
 }
@@ -340,7 +335,7 @@ getCSS() {
 	echo ${CSS//'\n'/'^'} | tr '^' '\n'; #monster migué
 }
 getSprite() {
-	echo "DATA = ${1:-}" > css-sprite.log;
+	echo "DATA = ${1:-}" >> css-sprite.log;
 	SPRITE_URL=`echo ${1:-} | awk -F '"url":"' '{print$2}' | awk -F '"' '{print$1}'`;
 	SPRITE_URL=${SPRITE_URL//"\\"/""};
 	curl -s -l $SPRITE_URL > "${INPUT_PATH}${OUTPUT}";
@@ -351,6 +346,7 @@ help
 if [ -f 'css-sprite.temp' ]; then
 	rm css-sprite.temp;
 fi;
+echo '' > css-sprite.log;
 
 verifyArgumens
 getSessionID
@@ -379,3 +375,8 @@ success "OK";
 
 # echo $OUTPUT
 success "Generated file at ${INPUT_PATH}${OUTPUT}";
+
+# remove log file in case of success
+if [ -f 'css-sprite.log' ]; then
+	rm css-sprite.log;
+fi;
