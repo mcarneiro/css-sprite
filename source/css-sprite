@@ -19,12 +19,13 @@ CREATED_DATA='';
 SESSION_ID='';
 TO_SEND=();
 TOTAL=0;
+TOTAL_WARNS=0;
 UPLOADED=0;
 
 help() {
 	if [ "${ARGS[0]}" = "?" ]; then
-			echo -e "
-CSS Sprite v0.1 (last change Fri Jul 27 16:44:02 BRT 2012)
+		echo -e "
+CSS Sprite v0.1.1 (last change Fri Jul 27 16:44:02 BRT 2012)
 
 ${B1}AUTHOR${B2}
   Marcelo Miranda Carneiro - mcarneiro@gmail.com
@@ -53,34 +54,16 @@ ${B1}USAGE${B2}
   When sprite.config exists, the script will ONLY use the listed files
   instead of listing through the folder.
 
-  Known Bug:
-  1. As the replace happens line-by-line on sprite.config, be carefull with
-     the file names. On the example above, the order should
-     be changed to avoid wrong replacement:
-
-     file-name=.test
-     file-name2=.second-test
-     file-name3=a:hover
-
-     the output css will be wrongly replaced:
-
-     .test { background-position ...
-     .test2 { background-position ...
-     .test3 { background-position ...
-     
-     Changing the order will fix the behaviour:
-
-     file-name3=a:hover
-     file-name2=.second-test
-     file-name=.test
-
 ${B1}EXAMPLES${B2}
   css-sprite ~/sprites/structure
   css-sprite ~/sprites/structure -s
   css-sprite ~/sprites/structure -o=teste.png
   css-sprite ~/sprites/structure -s | pbcopy (to copy to clipboard)
+
+${B1}LOG HISTORY${B2}
+Check it at https://github.com/mcarneiro/css-sprite#log-history
 ";
-			exit 1;
+		exit 1;
 	fi
 }
 # FORMAT AND MESSAGES
@@ -283,7 +266,7 @@ verifyArgumens() {
 getConfig() {
 	local CUSTOM_ARGS
 	if [ -f "${1:-}" ]; then
-		FILE_LIST=`cat ${1:-}`;
+		FILE_LIST=`cat ${1:-} | sort -ur`;
 	fi
 }
 getSessionID() {
@@ -292,7 +275,7 @@ getSessionID() {
 
 upload() {
 	if [ -f "${1:-}" ]; then
-		log "Uploading image $1";
+		log "Uploading image \"$1\"";
 		local FILENAME=""; # commenting to make it work on git-bash "`file $1 | awk -F ':' '{print$1}' | awk -F '/' '{print$(NF)}'`";
 		local RETURN_MSG="`curl -s -F img=@$1 -F Filename=$FILENAME $UPLOAD_URL -b PHPSESSID=$SESSION_ID`";
 		echo "$1 : $RETURN_MSG" >> css-sprite.log;
@@ -307,13 +290,18 @@ upload() {
 }
 uploadFiles() {
 	IFS=$'\n';
-	toUpload=();
-	TOTAL=( $FILE_LIST );
-	TOTAL=${#TOTAL[@]};
-	echo '' > css-sprite.temp
+	local FILE_TO_UPLOAD="";
+	echo '' >> css-sprite.temp;
 	for a in $FILE_LIST; do
 		# sleep 0.1s;
-		upload "${INPUT_PATH}`echo $a | awk -F '=' '{print$1}'`" &
+		FILE_TO_UPLOAD="${INPUT_PATH}`echo $a | awk -F '=' '{print$1}'`";
+		if [ -f $FILE_TO_UPLOAD ]; then # this is needed because "upload" will run on background and will run as "async"
+			TOTAL=$(( $TOTAL + 1 ));
+			upload "${INPUT_PATH}`echo $a | awk -F '=' '{print$1}'`" &
+		else
+			TOTAL_WARNS=$(( $TOTAL_WARNS + 1 ));
+			warn "Image \"$FILE_TO_UPLOAD\" was not found. Ignoring and moving on.";
+		fi
 	done;
 	IFS=' ';
 }
@@ -354,6 +342,7 @@ getSessionID
 title "Step 1 - Uploading files."
 uploadFiles
 
+# check if the files were uploaded successfully (workaround to make each upload asynchounous)
 UPLOADED=0;
 while [ "$UPLOADED" -lt "$TOTAL" ]; do
 	DUMMY=( `cat css-sprite.temp` );
@@ -361,22 +350,27 @@ while [ "$UPLOADED" -lt "$TOTAL" ]; do
 	# wait me
 done;
 rm css-sprite.temp;
-# sleep 0.5s;
-success "OK";
+
+# feedback message for upload
+if [ $TOTAL_WARNS -gt 0 ]; then
+	warn "$TOTAL files successfully loaded, $TOTAL_WARNS file(s) not found.";
+else
+	success "$TOTAL files successfully loaded!";
+fi
+
 CREATED_DATA="`create`"
 
 title "Step 2 - Loading generated image."
 getSprite "$CREATED_DATA";
-success "OK";
+success "Generated image loaded successfully!";
 
 title "Step 3 - Loading generated CSS."
 getCSS "$CREATED_DATA";
-success "OK";
 
-# echo $OUTPUT
 success "Generated file at ${INPUT_PATH}${OUTPUT}";
+finish; #if any warn were used, the message will be orange "finished with warnings", else it'll be green.
 
-# remove log file in case of success
+# remove log file (assuming it was successful)
 if [ -f 'css-sprite.log' ]; then
 	rm css-sprite.log;
 fi;

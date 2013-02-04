@@ -1,4 +1,4 @@
-# css-sprite v0.1
+# css-sprite v0.1.1
 
 Create css sprites via bash using http://css.spritegen.com/
 
@@ -38,33 +38,18 @@ When `sprite.config` exists, the script will ONLY use the listed files instead o
     css-sprite ~/sprites/structure -o=teste.png
     css-sprite ~/sprites/structure -s | pbcopy (to copy to clipboard)
 
-### Known bugs
-
-  1. As the replace happens line-by-line on `sprite.config`, be carefull with
-     the file names. On the example above, the order should
-     be changed to avoid wrong replacement:
-
-         file-name=.test
-         file-name2=.second-test
-         file-name3=a:hover
-
-     the output css will be wrongly replaced:
-
-         .test { background-position ...
-         .test2 { background-position ...
-         .test3 { background-position ...
-     
-     Changing the order will fix the behaviour:
-
-         file-name3=a:hover
-         file-name2=.second-test
-         file-name=.test
-
 ## Roadmap
 
   1. Create an installer;
-  2. Fix the sprite.config replacer bug;
-  3. Create an option to add new files automatically to `sprite.config` files instead of doing this manually;
-  4. Improve the CSS output (create a way to define the url or css extra rules for the classes);
-  5. Optimize the output png;
-  6. Create a grunt.js plugin;
+  2. Create an option to add new files automatically to `sprite.config` files instead of doing this manually;
+  3. Improve the CSS output;
+  4. Optimize the output png;
+  5. Create a grunt.js plugin;
+
+## Log History
+
+### 0.1.1
+  * Fixed the upload verifier when a file was not found (feedbacking it to user also);
+  * Fixed the sprite.config replacer bug;
+  * Created better comments on the code;
+  * Added more relevant feedback to the user, as "finished with warnings" message;
