@@ -316,7 +316,11 @@ getCSS() {
 		FROM=${FROM//'_'/'-'};
 		local TO=`echo $a | awk -F '=' '{print$2}'`;
 		if [ ! -z "$TO" ]; then
-			CSS=`echo $CSS | sed "s/${FROM}/${TO}/g"`;
+			if [ "`echo $TO | awk -F "@mixin" '{print NF-1}'`" = "0" ]; then # sass media-query workaround for extend 
+				CSS=`echo $CSS | sed "s/${FROM}/${TO}/g"`;
+			else
+				CSS=`echo $CSS | sed "s/${FROM} /${TO}/g" | sed "s/${FROM},//g"`;
+			fi
 		fi
 	done;
 	IFS=' ';
