@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Sprite test</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
+	<style>
+		/* CSS SPRITE BEGIN */
+		.chrome, .pencil-title, .pencil-title-end, .bt-slider-off, .bt-slider-on, 
+		.close, .elm a.facebook, .elm a.youtube, .elm a.twitter, .elm a.rss, 
+		.teste li a:hover, .tick-on, .tick, .tick .test, .teste li a, .tick, .bt-news-close, 
+		.ico-ver-todos, .ico-esconde-todos, .bar
+		{
+			display: block;
+			background-color: red;
+			background-repeat: no-repeat;
+			background-image: url('sprite.png'); 
+			background-image: -webkit-image-set(url('sprite.png') 1x, url('sprite-2x.png') 2x);
+			background-image: -moz-image-set(url('sprite.png') 1x, url('sprite-2x.png') 2x);
+			background-image: -o-image-set(url('sprite.png') 1x, url('sprite-2x.png') 2x);
+			background-image: -ms-image-set(url('sprite.png') 1x, url('sprite-2x.png') 2x);
+		}
+
+		.chrome { background-position: -2px -0px; width: 204px; height: 204px; }
+		.pencil-title { background-position: -2px -206px; width: 1040px; height: 46px; }
+		.pencil-title-end { background-position: -208px -0px; width: 42px; height: 46px; }
+		.bt-slider-off { background-position: -252px -0px; width: 30px; height: 30px; }
+		.bt-slider-on { background-position: -284px -0px; width: 30px; height: 30px; }
+		.close { background-position: -316px -0px; width: 30px; height: 30px; }
+		.elm a.facebook { background-position: -348px -0px; width: 27px; height: 27px; }
+		.elm a.youtube { background-position: -377px -0px; width: 27px; height: 27px; }
+		.elm a.twitter { background-position: -406px -0px; width: 27px; height: 27px; }
+		.elm a.rss { background-position: -435px -0px; width: 27px; height: 27px; }
+		.teste li a:hover, .tick-on { background-position: -464px -0px; width: 4px; height: 21px; }
+		.tick { background-position: -470px -0px; width: 4px; height: 21px; }
+		.tick .test { background-position: -476px -0px; width: 4px; height: 21px; }
+		.teste li a, .tick { background-position: -482px -0px; width: 4px; height: 21px; }
+		.bt-news-close { background-position: -488px -0px; width: 13px; height: 13px; }
+		.ico-ver-todos { background-position: -503px -0px; width: 11px; height: 11px; }
+		.ico-esconde-todos { background-position: -516px -0px; width: 11px; height: 11px; }
+		.bar { background-position: -529px -0px; width: 462px; height: 4px; }
+		/* CSS SPRITE END */
+		ul, li {
+			margin: 0;
+			padding: 0;
+			list-style-type: none;
+		}
+	</style>
+</head>
+<body>
+
+	<div class="chrome"></div>
+	<div class="pencil-title"></div>
+	<div class="pencil-title-end"></div>
+	<div class="bt-slider-off"></div>
+	<div class="bt-slider-on"></div>
+	<div class="close"></div>
+	<div class="elm"><a href="#" class="facebook"></a></div>
+	<div class="elm"><a href="#" class="youtube"></a></div>
+	<div class="elm"><a href="#" class="twitter"></a></div>
+	<div class="elm"><a href="#" class="rss"></a></div>
+	<ul class="teste">
+		<li>
+						<a href="#"></a>
+		</li>
+	</ul>
+	<div class="tick-on"></div>
+	<div class="tick"></div>
+	<div class="tick">
+		<br>
+		<span class="test"></span>
+	</div>
+	<div class="bt-news-close"></div>
+	<div class="ico-ver-todos"></div>
+	<div class="ico-esconde-todos"></div>
+	<div class="bar"></div>
+</body>
+</html>
